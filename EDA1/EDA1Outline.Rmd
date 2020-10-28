@@ -15,16 +15,46 @@ This informs what visualizations and summaries might show informative patterns l
 
 1. What resources/types of ecological data are represented in the dataset?
 
-1. What does the protocol or study plan say is purpose of the data collection?
+> Tree data:
+>
+>  * Species
+>  * Clumps and stems
+>  * Height
+>  * DBH
+>  * Status (living/dead)
+>  * Crown kill percentages
+>  * Branch/bole cankers
+>  * Mountain pine beatle presence
+>  * Mistletoe presence
+>  * Counts of cones
+>
+> Seedling data:
+>
+>  * Species
+>  * Height class
+>  * Status (live/dead)
+  
 
-1. What is the geographical span of the dataset? Are there major divisions within that span (e.g., park units, lakes, watersheds, habitats)? What is the temporal span of the dataset? Is there fundamental seasonality in that span (e.g., sites visited once a month, every summer, etc.)? Is there any rotating panel design in the observation schedule? What potential stressors might affect spatial or temporal variation?  What patterns of variation (spatial or temporal) would be expected?  Changes in means, durations, extremes, spatial or temporal variance, flashiness, etc.
+2. What does the protocol or study plan say is purpose of the data collection?
 
-1. What are the potential ecological consequences of these variables?  What form? Degree days, highest temperature sustained for 5+ days, extremes, etc.  Not just mean or median. Were there environmental changes during the span of data collection that could influence results (changes in land use, wildfire, drought, etc.)
+> The purpose of the MOJN Pine protocol is to determine status and trends of bristlecone and limber pine forests in Great Basin National Park.
 
-1. Are there additional datasets that could provide covariates for later stages of EDA?
+3. What is the geographical span of the dataset? Are there major divisions within that span (e.g., park units, lakes, watersheds, habitats)? What is the temporal span of the dataset? Is there fundamental seasonality in that span (e.g., sites visited once a month, every summer, etc.)? Is there any rotating panel design in the observation schedule? What potential stressors might affect spatial or temporal variation?  What patterns of variation (spatial or temporal) would be expected?  Changes in means, durations, extremes, spatial or temporal variance, flashiness, etc.
+
+> The geographical span of the dataset is within Great Basin National Park. Within GRBA, there is a large range of elevations. The temporal span of the dataset is currently from 2018 to present. Sites are visited in late summer, usually late August to early September. The rotating panel design consists of 3 panels of 10 plots monitored each year, revisited every three years, for a total of 30 plots. Potential stessors that might affect spatial or temporal variation are elevation, precipitation, aspect, fire cycle (hard to predict). Tree species distrubution is one thing that could be a pattern of variation between elevational gradients. Aspect could affect species type and sizes due to variations in sun exposure. Precipitation differences, between different terrains (spatial) and between years (temporal), has a major affect on the vegetation in different plots. Fire history and frequency affects the status (living or dead) of the trees as well as the types of species found in certain areas.
+
+4. What are the potential ecological consequences of these variables?  What form? Degree days, highest temperature sustained for 5+ days, extremes, etc.  Not just mean or median. Were there environmental changes during the span of data collection that could influence results (changes in land use, wildfire, drought, etc.)
+
+> Potential ecological consequences of these variables are variations in species distribution, size variation, and seedling growth. Precipitation, life cycle variation, and other factors could potentially affect cone output per year. Fire on plots can push data on status (living/dead) toward a majority dead. 
+
+5. Are there additional datasets that could provide covariates for later stages of EDA?
+
+> Historical precipitation data, historical fire data, historical stand treatments (logging, nearby monitoring, road building, etc.), species lifecycles information.
 
 ### Management considerations
 1. Are there defined thresholds to trigger management tied to the dataset?
+
+> There are no specific thresholds to trigger management tied to the dataset. However, evidence of outbreaks of pest or disease may trigger management action.
 
 
 ## EDA0 
@@ -32,24 +62,133 @@ This informs what visualizations and summaries might show informative patterns l
 ### Interview with a Dataset: Descriptive Metadata
 
 1. Based on data certification/QC, is this a reliable dataset? Garbage in -> garbage out. Consider precision/accuracy, consistency over time, etc.
-1. What is the resource represented in the dataset?
-1. What are the primary goals of the data collection?
+
+> This is a reliable dataset. Data is collected by many different observers over the life cycle of the monitoring project.
+
+2. What is the resource represented in the dataset?
+
+> The resource that is represented in the dataset is great basin bristlecone and limber pine forest structures and health.
+
+3. What are the primary goals of the data collection?
+
+> The primary goals of data collection are to understand the structure and temporal changes of whitebark pine forests in Great Basin National Park, in addition to detecting trends related to forest health in regards to pest and disease.
+
 
 ### Interview with a Dataset: Structural, Supporting, and Response Variables
 
 1. What constitutes an “observation” for this dataset? By this definition, how many observations are in the dataset?
+
+> An observation in this dataset means an individual tree within a plot. There are 4937 observations currently.
+
 1. What are the structural variables represented in the dataset (i.e., information about how/where/when data were collected)? Unlike supporting variables, such as comments, without structural variable data the records cannot be parsed. What types of data are these structural variables (e.g., factors, boolean,continuous integers, etc.) and what is their expected range?
+
+> Sample frame (non-ordinal factor)
+>
+>   * Expected values: Great Basin Bristlecone Pine Montane Woodland; Great Basin Bristlecone Pine Subalpine Woodland; Great Basin Limber Pine Woodland Alliance
+>
+> Plot number (non-ordinal factor)
+>
+> * Expected values: GRBA002 to GRBA413 (unless more plots are selected in the future) 
+> 
+> Date of record collection (date)
+>
+> * Expected values: 2018 and later
+>
+> Subplot number (ordinal factor)
+>
+> * Expected values: 1-5
+>
+> Tree number (non-ordinal factor)
+>
+> * Expected values: 0001 - 9999
+
+
 1. What are the response variables recorded in the dataset?
+
+> Tree species (non-ordinal factor) *not really a response variable, more of an explanatory variable*
+>
+> * Expected values: PINLON, PINFLE, POPTRE, PSEMEN, PINPON, ABICON, PICENG, CERLED, JUNSCO, PINMON, UNK
+>
+> Clump number and stem letter (non-ordinal factor) *not really a response variable, more of an explanatory variable*
+>
+> * Expected values: Clump number: positive number 1 or above; stem letter: a-z
+>
+> Tree height (continuous number)
+>
+> * Expected values: 1.37 and above (reasonable top end ~33)
+>
+> Height class for seedlings (ordinal factor)
+>
+> * Expected values: 20 - <50, 50 - <100, 100 - <137
+>
+> Tree DBH (continuous number)
+>
+> * Expected values: 0.1 and above (reasonable top end ~ 120)
+>
+> Tree status (non-ordinal factor)
+>
+> * Expected values: Live, Dead
+>
+> Cause of death (non-ordninal factor)
+>
+> * Expected values: unknown, fire, lightning, mountain pine beetle, mistletoe, white pine blister rust
+>
+> Mortality year (date)
+>
+> * Expected values: ~1900s? to present (*hard to estimate, could be older*)
+>
+> Krummholtz status (boolean)
+>
+> * Expected values: True/False (yes/no)
+>
+> Crown health (ordinal factor)
+>
+> * Expected values: 1 - 5
+>
+> Crown kill (continuous number/percentage)
+>
+> * Expected values: 0 - 100 (or 0.00 - 1.00 if percentage)
+>
+> Presence of whtie pine blister rust, mistletoe, or mountain pine beetle (boolean)
+>
+> * Expected values: True/False (yes/no)
+>
+> Cone counts (Continuous integer)
+>
+> * Expected values: 0 and above (up to ~500 possible)
+
+
+
 1. What are the supporting variables recorded in the dataset (e.g., comments, notes, accuracy assessments)?
+
+> Notes
+>
+> * Expected values: Varies. Both plot-level and individual observation notes.
+
 
 ### Data Summary & Visualization
 EDA0 begins with summary statistics. Most of this can be done in just a few lines of code with automated EDA packages in R.
 
 1. Graph the patterns in the structural variables (e.g., dates, sites): are observations evenly spaced within/between the structural variables and if not, does the pattern line up with the expectations?
+
+> 
+
 1. Categorical response variables: generate a barchart for each variable
+
+>
+
 1. Numerical response variables: generate descriptive statistics such as boxplots, kernel distributions, 5-number summaries and/or histograms for each variable
+
+>
+
 1. How many missing values are there? Does this bring up questions or concerns about the dataset?
+
+>
+
 1. What patterns do you notice?
+
+>
+
 
 ## EDA1
 
