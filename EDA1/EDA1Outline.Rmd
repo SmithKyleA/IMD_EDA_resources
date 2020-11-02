@@ -1,13 +1,27 @@
 ---
-title: "EDA1 Demo"
-author: "Nicole Hupp & Sarah Wright"
-date: "9/30/2020"
+title: "EDA0/EDA1 for MOJN Pine Data"
+author: "Template by Nicole Hupp & Sarah Wright, filled in by Kyle Smith"
+date: "11/2/2020"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+> Packages used:
+>
+> * readxl
+> * dplyr
+> * lubridate
+> * ggplot2
+> * ggpubr
+> * knitr
+> * kableExtra
+
+> I used pine data exported to an excel table from the database, using the backend "export to MS Excel" button. You'll need to specify where that file is on your local computer.
+ 
+
 
 ## Pre-EDA
 ### Interviewing the ecology
@@ -101,6 +115,10 @@ This informs what visualizations and summaries might show informative patterns l
 > Tree number (non-ordinal factor)
 >
 > * Expected values: 0001 - 9999
+>
+> Clump number and stem letter (non-ordinal factor)
+>
+> * Expected values: Clump number: positive number 1 or above; stem letter: a-z
 
 
 1. What are the response variables recorded in the dataset?
@@ -108,10 +126,6 @@ This informs what visualizations and summaries might show informative patterns l
 > Tree species (non-ordinal factor) *not really a response variable, more of an explanatory variable*
 >
 > * Expected values: PINLON, PINFLE, POPTRE, PSEMEN, PINPON, ABICON, PICENG, CERLED, JUNSCO, PINMON, UNK
->
-> Clump number and stem letter (non-ordinal factor) *not really a response variable, more of an explanatory variable*
->
-> * Expected values: Clump number: positive number 1 or above; stem letter: a-z
 >
 > Tree height (continuous number)
 >
@@ -149,7 +163,7 @@ This informs what visualizations and summaries might show informative patterns l
 >
 > * Expected values: 0 - 100 (or 0.00 - 1.00 if percentage)
 >
-> Presence of whtie pine blister rust, mistletoe, or mountain pine beetle (boolean)
+> Presence of white pine blister rust, mistletoe, or mountain pine beetle (boolean)
 >
 > * Expected values: True/False (yes/no)
 >
@@ -171,24 +185,192 @@ EDA0 begins with summary statistics. Most of this can be done in just a few line
 
 1. Graph the patterns in the structural variables (e.g., dates, sites): are observations evenly spaced within/between the structural variables and if not, does the pattern line up with the expectations?
 
-> 
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+## Set your working directory
+setwd("C:\\Users\\kyleasmith\\Desktop\\FNP_MOJN_2020_Draft2")
 
-1. Categorical response variables: generate a barchart for each variable
+## Load packages
+library(readxl)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
 
->
+## Replace your file name here.
+## I exported this data from the database using the backend "Export MS Excel Spreadsheet" button.
+TreeData <- read_xlsx("Pine_RawData_TreeData_20201029_1636.xlsx")
+SeedlingData <- read_xlsx("Pine_RawData_SeedlingCounts_20201029_1636.xlsx")
 
-1. Numerical response variables: generate descriptive statistics such as boxplots, kernel distributions, 5-number summaries and/or histograms for each variable
+## Graphs of dates when the data was recorded
+## Number of observations per day
+ggplot(TreeData, aes(Start_Date)) +
+  geom_histogram(bins = 100) +
+  ggtitle("Number of tree observations per day")
+## Number of plots per day
+TreeData %>%
+  group_by(Start_Date) %>%
+  summarize(n = n_distinct(PlotID_Number)) %>%
+  ggplot(., aes(Start_Date, n)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Number of plots per day")
+## It looks like the data are collected at roughly the same time of year each year
 
->
 
-1. How many missing values are there? Does this bring up questions or concerns about the dataset?
+## Count the observations (trees) per plot.
+x <- TreeData %>% count(PlotID_Number)
+## Graph the observations per plot.
+## Horizontal cyan line is the average observations per plot, horizontal magenta lines are the splits between different sampling frames.
+ggplot(TreeData, aes(PlotID_Number)) +
+  geom_bar() +
+  geom_hline(yintercept = mean(x$n), color = "cyan") +
+  geom_vline(xintercept = c(10.5, 20.5), color = "magenta") +
+  ggtitle("Total tree observations per plot")
 
->
 
-1. What patterns do you notice?
+```
 
->
+> Patterns in the dates of obervations and plots line up when field work was completed, August to September. Patterns in the total tree observations per plot are highly variable, but all seem to be within reason. The horizontal cyan line shows the average, while the vertical magenta lines show the splits between different sampling frames.
 
+2. Categorical response variables: generate a barchart for each variable
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(ggpubr)
+## Tree species (non-ordinal factor) *not really a response variable, more of an explanatory variable*
+TreeData %>%
+  group_by(Species_Code) %>%
+  count() %>%
+  ggplot(aes(reorder(Species_Code, n), n)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  ggtitle("Count of observations of different tree species")
+
+SeedlingData %>%
+  group_by(Species_Code) %>%
+  count() %>%
+  ggplot(aes(reorder(Species_Code, n), n)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  ggtitle("Count of observations of different seedling species")
+## Height class for seedlings (ordinal factor)
+SeedlingData$Height_Class <- factor(SeedlingData$Height_Class, levels = c("20 - <50 cm", "50 - <100 cm", "100 - <137 cm"))
+ggplot(SeedlingData, aes(Height_Class)) +
+  geom_bar() +
+  ggtitle("Counts of seedlings by height class")
+
+## Tree status (non-ordinal factor)
+ggplot(TreeData, aes(Tree_Status)) +
+  geom_bar() +
+  ggtitle("Counts of tree status")
+
+## cause of death (non-ordninal factor)
+ggplot(TreeData, aes(StatusDead_Cause)) +
+  geom_bar() +
+  ggtitle("Counts of tree cause of death")
+
+## Mortality year (date)
+## Not in the dataset??
+
+## Krummholtz status (boolean)
+## maybe in the tree status?
+
+## Crown health (ordinal factor)
+## Also not in the dataset?
+
+## Presence of white pine blister rust, mistletoe, or mountain pine beetle (boolean)
+g1 <- ggplot(TreeData) + geom_bar(aes(BranchCanks_A_Upper_YN))
+g2 <- ggplot(TreeData) + geom_bar(aes(BranchCanks_I_Upper_YN))
+g3 <- ggplot(TreeData) + geom_bar(aes(BranchCanks_ITypes_Upper))
+g4 <- ggplot(TreeData) + geom_bar(aes(BranchCanks_A_Mid_YN))
+g5 <- ggplot(TreeData) + geom_bar(aes(BranchCanks_I_Mid_YN))
+g6 <- ggplot(TreeData) + geom_bar(aes(BranchCanks_ITypes_Mid))
+g7 <- ggplot(TreeData) + geom_bar(aes(BranchCanks_A_Lower_YN))
+g8 <- ggplot(TreeData) + geom_bar(aes(BranchCanks_I_Lower_YN))
+g9 <- ggplot(TreeData) + geom_bar(aes(BranchCanks_ITypes_Lower))
+g10 <- ggplot(TreeData) + geom_bar(aes(BoleCankers_A_Upper_YN))
+g11 <- ggplot(TreeData) + geom_bar(aes(BoleCankers_I_Upper_YN))
+g12 <- ggplot(TreeData) + geom_bar(aes(BoleCanks_ITypes_Upper))
+g13 <- ggplot(TreeData) + geom_bar(aes(BoleCankers_A_Mid_YN))
+g14 <- ggplot(TreeData) + geom_bar(aes(BoleCankers_I_Mid_YN))
+g15 <- ggplot(TreeData) + geom_bar(aes(BoleCanks_ITypes_Mid))
+g16 <- ggplot(TreeData) + geom_bar(aes(BoleCankers_A_Lower_YN))
+g17 <- ggplot(TreeData) + geom_bar(aes(BoleCankers_I_Lower_YN))
+g18 <- ggplot(TreeData) + geom_bar(aes(BoleCanks_ITypes_Lower))
+
+ggarrange(g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16, g17, g18) %>% annotate_figure(top = "White pine blister rust presence")
+
+g19 <- ggplot(TreeData) + geom_bar(aes(PineBeetle_JGalleries_YN))
+g20 <- ggplot(TreeData) + geom_bar(aes(PineBeetle_PitchTube_YN))
+g21 <- ggplot(TreeData) + geom_bar(aes(PineBeetle_Frass_YN))
+
+ggarrange(g19, g20, g21) %>% annotate_figure(top = "Mountain pine beetle indicators")
+
+ggplot(TreeData) + geom_bar(aes(Mistletoe_YN)) + ggtitle("Mistletoe presence")
+
+```
+
+
+3. Numerical response variables: generate descriptive statistics such as boxplots, kernel distributions, 5-number summaries and/or histograms for each variable
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+ggplot(TreeData, aes(TreeHeight_m)) +
+  geom_histogram() +
+  ggtitle("Tree height histogram")
+
+ggplot(TreeData, aes(TreeHeight_m)) +
+  geom_boxplot() +
+  ggtitle("Tree height boxplot")
+
+summary(TreeData$TreeHeight_m)
+
+ggplot(TreeData, aes(TreeDBH_cm)) +
+  geom_histogram(bins = 15) +
+  ggtitle("Tree DBH histogram")
+
+ggplot(TreeData, aes(TreeDBH_cm)) +
+  geom_boxplot() +
+  ggtitle("Tree DBH boxplot")
+
+summary(TreeData$TreeDBH_cm)
+
+## Cone counts not present in the exported dataset.
+
+## Crown kill percentages not present in exported dataset.
+
+```
+
+
+4. How many missing values are there? Does this bring up questions or concerns about the dataset?
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+TreeData %>%
+  summarise_all(list(~sum(is.na(.)))) %>%
+  as.list(.)
+```
+
+> All values without missing data are collected on all trees. Values with missing data are metrics only collected on target species, so it makes sense that there would be a large amount of NA data.
+
+5. What patterns do you notice?
+
+> * Continuous numerical variables tend to have a narrow range between first and third quartiles, with a long tail to the higher values.
+> * On the pine beetle and mistletoe presence/abesence, the appears to be an "NA" value in addition to a blank cell (needs to be consolidated)
+> * Some of the variables were not exported by the backend (such as the cone counts)
+> * There are large amounts of missing data due to certain metrics only collected on target species. This needs to be parsed by species to really see if the data is missing for species where the metric is meant to be collected.
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+library(knitr)
+library(kableExtra)
+print("Number of missing data values grouped by species (open HTML in browser to see fixed header on scrolling table)")
+kable(TreeData %>%
+        group_by(Species_Code) %>%
+        summarise_all(list(~sum(is.na(.)))) %>%
+        t(.) %>%
+        `colnames<-`(., .[1, ])
+) %>%
+  kable_minimal() %>%
+  scroll_box(height = "300px", width = "100%", fixed_thead = T)
+
+```
 
 ## EDA1
 
