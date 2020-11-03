@@ -308,14 +308,33 @@ ggarrange(g19, g20, g21) %>% annotate_figure(top = "Mountain pine beetle indicat
 ggplot(TreeData) + geom_bar(aes(Mistletoe_YN)) + ggtitle("Mistletoe presence")
 
 ```
+<<<<<<< HEAD
+
+=======
 
 
 3. Numerical response variables: generate descriptive statistics such as boxplots, kernel distributions, 5-number summaries and/or histograms for each variable
 
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
+
+
+```
+
+> 
+
+4. How many missing values are there? Does this bring up questions or concerns about the dataset?
+>>>>>>> 3b5984d2750b7b685c624742056e422b5f9d8ac1
+
+3. Numerical response variables: generate descriptive statistics such as boxplots, kernel distributions, 5-number summaries and/or histograms for each variable
+
+<<<<<<< HEAD
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
 ggplot(TreeData, aes(TreeHeight_m)) +
   geom_histogram() +
   ggtitle("Tree height histogram")
+=======
+5. What patterns do you notice?
+>>>>>>> 3b5984d2750b7b685c624742056e422b5f9d8ac1
 
 ggplot(TreeData, aes(TreeHeight_m)) +
   geom_boxplot() +
